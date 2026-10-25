@@ -83,8 +83,8 @@ expected_steps() {
     omarchy-shell \
     omarchy-update-restart \
     omarchy-hook \
-    omarchy-update-mise \
     omarchy-update-aur-pkgs \
+    omarchy-update-mise \
     omarchy-update-boot \
     omarchy-update-stay-awake \
     omarchy-update-restart
@@ -124,8 +124,8 @@ for step in omarchy-migrate omarchy-hook omarchy-update-aur-pkgs omarchy-update-
 done
 pass "a blocked package upgrade stops the update before it migrates"
 
-# Optional tools may fail after system packages have already changed. Finish
-# AUR work, verify boot files and release Stay Awake before offering a reboot.
+# Optional tools may fail after system packages have already changed. Verify
+# boot files and release Stay Awake before offering a reboot.
 FAILING_STEP=omarchy-update-mise run_update -y || fail "a failed mise update prevents system update completion"
 diff <(expected_steps) <(steps_run) >"$test_tmp/order" ||
   fail "a failed mise update skips later update steps" "$(cat "$test_tmp/order")"
