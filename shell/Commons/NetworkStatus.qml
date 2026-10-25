@@ -41,7 +41,7 @@ Singleton {
     id: events
     // The status helper resolves an IPv4 Internet probe. IPv6 RA lifetime
     // updates do not change that lookup and must not wake the reader.
-    command: ["ip", "-4", "monitor", "route"]
+    command: ["ip", "-4", "monitor", "route", "rule"]
     running: true
     stdout: SplitParser {
       onRead: root.refresh()
