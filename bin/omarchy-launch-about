@@ -93,14 +93,21 @@ write_about_config() {
     '{"OS Age": $age, "Uptime": $uptime, "Update": $update}')
 
   mkdir -p "${ABOUT_CONFIG%/*}"
-  jq --argjson headings "$headings" --argjson keys "$keys" '
+  if jq --argjson headings "$headings" --argjson keys "$keys" '
     .modules |= map(
       if type == "object" and .type == "custom" and $headings[.format] then .format = $headings[.format]
       elif type == "object" and (.key // "" | test("^\\S+ ")) then
         (.key | capture("^(?<icon>\\S+) (?<label>.+)$")) as $k
         | if $keys[$k.label] then .key = "\($k.icon) \($keys[$k.label])" else . end
       else . end
-    )' "$OMARCHY_FASTFETCH_DIR/config.jsonc" >"$ABOUT_CONFIG"
+    )' "$OMARCHY_FASTFETCH_DIR/config.jsonc" >"$ABOUT_CONFIG.new"
+  then
+    mv "$ABOUT_CONFIG.new" "$ABOUT_CONFIG"
+  else
+    # fastfetch reads JSONC; jq does not, so a comment or trailing comma ends
+    # here, and the untranslated config runs rather than an empty copy.
+    rm -f "$ABOUT_CONFIG.new" "$ABOUT_CONFIG"
+  fi
 }
 
 # A user's own fastfetch config runs as it is; otherwise the translated copy does.
